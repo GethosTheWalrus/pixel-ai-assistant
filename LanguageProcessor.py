@@ -140,6 +140,7 @@ class LanguageProcessor:
             print("\nDone")
             self.parser.exit(0)
         except Exception as e:
+            print("listen_for_speech_from_mic ->", e)
             self.parser.exit(type(e).__name__ + ": " + str(e))
 
     def ask(self, prompt):
