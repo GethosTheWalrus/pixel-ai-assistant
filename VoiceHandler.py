@@ -1,69 +1,30 @@
 from vosk import Model, KaldiRecognizer
-import pyttsx3 as tts
 import argparse
 import queue
 import sys
 import sounddevice as sd
 import json
-import ollama
-import time
-import re
 
 
-class LanguageProcessor:
-    # init tts
-    speaker = tts.init()
-
-    # Set the model and temperature (optional)
-    # model = "phi3:mini"
-    model = "llama3"
-    temperature = 1.0
-    ollama_url = "http://localhost:3000"
-    ollama_client = None
-
+class VoiceHandler:
     # general variables
-    q = queue.Queue()
-    parser = argparse.ArgumentParser(add_help=False)
+    q = None
+    parser = None
     args = None
-    retry_interval = 1
     wake_word = "pixel"
     listening = True
-    speech_input_callback = None
+    voice_input_callback = None
     default_reply = "I encountered an error while" + \
                     " processing your request. Please try again."
-    filters = [
+    speech_filters = [
         r'```(.+)?\n[\s\S]+?```'
     ]
 
-    def __init__(
-                    self,
-                    speech_input_callback,
-                    ollama_url="http://localhost:3000"
-                ) -> None:
-        # self.connect_to_ollama(ollama_url)
-        self.init_ollama_connection(ollama_url)
+    def __init__(self, voice_input_callback) -> None:
+        self.q = queue.Queue()
+        self.parser = argparse.ArgumentParser(add_help=False)
         self.init_parser()
-        self.speech_input_callback = speech_input_callback
-
-    def connect_to_ollama(self, ollama_url):
-        self.ollama_client = ollama.Client(ollama_url)
-
-    def init_ollama_connection(self, ollama_url):
-        while self.ollama_client is None:
-            time.sleep(self.retry_interval)
-            try:
-                print("connecting to OLLAMA...")
-                self.connect_to_ollama(ollama_url)
-                print("testing OLLAMA connection...")
-                response = self.ask("hello, are you there?")
-                print(response)
-            except Exception as e:
-                self.ollama_client = None
-                print(
-                    "init_ollama_connectio ->",
-                    "error connecting to OLLAMA:",
-                    e
-                )
+        self.voice_input_callback = voice_input_callback
 
     def init_parser(self):
         self.parser.add_argument(
@@ -125,10 +86,10 @@ class LanguageProcessor:
                     if rec.AcceptWaveform(data):
                         # return json.loads(rec.Result())
                         self.listening = False
-                        self.speech_input_callback(json.loads(
-                                                   rec.Result())["text"],
-                                                   self.wake_word
-                                                   )
+                        self.voice_input_callback(json.loads(
+                                                  rec.Result())["text"],
+                                                  self.wake_word
+                                                  )
                         self.listening = True
                     else:
                         # print(rec.PartialResult())
@@ -140,31 +101,7 @@ class LanguageProcessor:
             print("\nDone")
             self.parser.exit(0)
         except Exception as e:
-            print("listen_for_speech_from_mic ->", e)
             self.parser.exit(type(e).__name__ + ": " + str(e))
-
-    def ask(self, prompt):
-        llmResponse = ollama.chat(model=self.model, messages=[
-            {
-                'role': 'user',
-                'content': prompt + ". reply as briefly as possible.",
-            },
-        ])
-
-        response = llmResponse['message']['content']
-        filtered_response = self.filter_response(response)
-        return response, filtered_response
-
-    def filter_response(self, llm_response):
-        new_string = llm_response
-        for filter in self.filters:
-            new_string = re.sub(filter, '', new_string)
-
-        return new_string
-
-    def speak(self, content):
-        self.speaker.say(content)
-        self.speaker.runAndWait()
 
     def int_or_str(self, text):
         """Helper function for argument parsing."""
@@ -173,7 +110,7 @@ class LanguageProcessor:
         except ValueError:
             return text
 
-    def callback(self, indata, frames, time, status):
+    def callback(self, indata, frames, timestamp, status):
         """This is called (from a separate thread) for each audio block."""
         if status:
             print("callback ->", status, file=sys.stderr)

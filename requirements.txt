@@ -1,0 +1,5 @@
+vosk
+pyttsx3
+pyaudio
+sounddevice
+ollama
