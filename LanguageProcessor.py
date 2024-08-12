@@ -59,7 +59,11 @@ class LanguageProcessor:
                 print(response)
             except Exception as e:
                 self.ollama_client = None
-                print("error connecting to OLLAMA: ", e)
+                print(
+                    "init_ollama_connectio ->",
+                    "error connecting to OLLAMA:",
+                    e
+                )
 
     def init_parser(self):
         self.parser.add_argument(
@@ -120,7 +124,6 @@ class LanguageProcessor:
                     data = self.q.get()
                     if rec.AcceptWaveform(data):
                         # return json.loads(rec.Result())
-                        print("heard something")
                         self.listening = False
                         self.speech_input_callback(json.loads(
                                                    rec.Result())["text"],
@@ -172,6 +175,6 @@ class LanguageProcessor:
     def callback(self, indata, frames, time, status):
         """This is called (from a separate thread) for each audio block."""
         if status:
-            print(status, file=sys.stderr)
+            print("callback ->", status, file=sys.stderr)
         if self.listening:
             self.q.put(bytes(indata))
