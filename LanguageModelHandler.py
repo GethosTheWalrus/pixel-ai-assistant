@@ -8,8 +8,8 @@ class LanguageModelHandler:
     tts_handler_object_method = None
 
     # Set the model and temperature (optional)
-    # model = "phi3:mini"
-    model = "llama3"
+    model = "phi3:mini"
+    # model = "llama3"
     temperature = 1.0
     ollama_url = "http://localhost:3000"
     ollama_client = None
