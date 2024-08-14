@@ -1,3 +1,3 @@
 class IntegrationsHandler:
-    def __init__(self, integrations):
+    def __init__(self):
         pass
