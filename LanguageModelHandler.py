@@ -21,15 +21,24 @@ class LanguageModelHandler:
     speech_filters = [
         r'```(.+)?\n[\s\S]+?```'
     ]
+    display_handler = None
 
     def __init__(
                     self,
                     tts_handler_object_method=None,
+                    display_handler=None,
                     ollama_url="http://localhost:3000"
                 ) -> None:
         # self.connect_to_ollama(ollama_url)
         self.init_ollama_connection(ollama_url)
         self.tts_handler_object_method = tts_handler_object_method
+        self.display_handler = display_handler
+
+        self.set_display("Listening...")
+
+    def set_display(self, message):
+        if self.display_handler is not None:
+            self.display_handler.set_message(message)
 
     def connect_to_ollama(self, ollama_url):
         self.ollama_client = ollama.Client(ollama_url)
@@ -69,6 +78,8 @@ class LanguageModelHandler:
                                            "after saying 'Pixel'.")
             return
 
+        self.set_display("Thinking...")
+
         # process the contents of the voice prompt following the wake word
         full_response, filtered_response = self.ask(
             " ".join(voiceInputString.split(" ")[1:])
@@ -76,7 +87,10 @@ class LanguageModelHandler:
 
         # speak the response
         print(full_response)
+        self.set_display("Answering...")
         self.tts_handler_object_method(filtered_response)
+
+        self.set_display("Listening")
 
     def ask(self, prompt):
         llmResponse = ollama.chat(model=self.model, messages=[
