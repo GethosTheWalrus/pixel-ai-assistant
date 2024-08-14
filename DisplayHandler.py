@@ -1,4 +1,3 @@
-from time import sleep
 import board
 from digitalio import DigitalInOut
 from adafruit_character_lcd.character_lcd import Character_LCD_Mono
