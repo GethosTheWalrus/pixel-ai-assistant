@@ -90,7 +90,7 @@ class LanguageModelHandler:
         self.set_display("Answering...")
         self.tts_handler_object_method(filtered_response)
 
-        self.set_display("Listening")
+        self.set_display("Listening...")
 
     def ask(self, prompt):
         llmResponse = ollama.chat(model=self.model, messages=[
