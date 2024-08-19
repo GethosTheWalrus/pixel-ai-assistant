@@ -28,7 +28,7 @@ class GetQuotePlugin(PixelPlugin):
         quote_str = split_quote[0].strip() + \
             (". " + split_quote[1].strip()
              if len(split_quote) > 1
-             else ". Unknown")
+             else " - Unknown")
 
         return (
             quote_str
