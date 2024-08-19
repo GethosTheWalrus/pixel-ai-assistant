@@ -1,4 +1,5 @@
 vosk
+py3-tts
 pyttsx3
 pyaudio
 sounddevice

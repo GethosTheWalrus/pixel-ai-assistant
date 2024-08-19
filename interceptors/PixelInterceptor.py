@@ -18,7 +18,7 @@ class PixelInterceptor:
     def is_matched(self, voice_prompt) -> bool:
         self.voice_prompt = voice_prompt
         voice_prompt_words = self.voice_prompt.split(" ")
-        return len(set(voice_prompt_words).intersection(self.keywords)) >= 3
+        return len(set(voice_prompt_words).intersection(self.keywords)) >= 4
 
     def handle_interceptor_error(self):
         return "I encountered an error while processing your request." \
