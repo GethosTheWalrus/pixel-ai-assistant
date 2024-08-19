@@ -22,17 +22,20 @@ class LanguageModelHandler:
         r'```(.+)?\n[\s\S]+?```'
     ]
     display_handler = None
+    plugin_handler = None
 
     def __init__(
                     self,
                     tts_handler_object_method=None,
                     display_handler=None,
+                    plugin_handler=None,
                     ollama_url="http://localhost:3000"
                 ) -> None:
         # self.connect_to_ollama(ollama_url)
         self.init_ollama_connection(ollama_url)
         self.tts_handler_object_method = tts_handler_object_method
         self.display_handler = display_handler
+        self.plugin_handler = plugin_handler
 
         self.set_display("Listening...")
 
@@ -79,11 +82,20 @@ class LanguageModelHandler:
             return
 
         self.set_display("Thinking...")
+        prompt_without_wake_word = " ".join(voiceInputString.split(" ")[1:])
 
-        # process the contents of the voice prompt following the wake word
-        full_response, filtered_response = self.ask(
-            " ".join(voiceInputString.split(" ")[1:])
-        )
+        full_response, filtered_response = None, None
+
+        if prompt_without_wake_word in self.plugin_handler.modules:
+            # process the contents of the voice prompt
+            # by invoking the proper plugin
+            plugin = self.plugin_handler.modules[prompt_without_wake_word]
+            full_response = filtered_response = plugin.response
+        else:
+            # process the contents of the voice prompt through the LLM
+            full_response, filtered_response = self.ask(
+                prompt_without_wake_word
+            )
 
         # speak the response
         print(full_response)

@@ -70,7 +70,7 @@ class VoiceHandler:
 
             with sd.RawInputStream(
                 samplerate=self.args.samplerate,
-                blocksize=4000,
+                blocksize=16000,
                 device=self.args.device,
                 dtype="int16",
                 channels=1,

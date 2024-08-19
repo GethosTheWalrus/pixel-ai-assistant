@@ -1,3 +1,4 @@
+from PluginsHandler import PluginsHandler
 from VoiceHandler import VoiceHandler
 from LanguageModelHandler import LanguageModelHandler
 from TextToSpeechHandler import TextToSpeechHandler
@@ -16,9 +17,16 @@ if __name__ == "__main__":
     if config["lcd"] is True:
         displayHandler = DisplayHandler()
 
+    pluginsHandler = PluginsHandler()
     ttsHandler = TextToSpeechHandler()
-    llmHandler = LanguageModelHandler(ttsHandler.speak, displayHandler)
-    voiceHandler = VoiceHandler(llmHandler.get_response_to_prompt)
+    llmHandler = LanguageModelHandler(
+        ttsHandler.speak,
+        displayHandler,
+        pluginsHandler
+    )
+    voiceHandler = VoiceHandler(
+        llmHandler.get_response_to_prompt
+    )
 
     # listen for voice input
     print("Listening...")
