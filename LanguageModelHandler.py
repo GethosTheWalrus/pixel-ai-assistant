@@ -9,7 +9,7 @@ class LanguageModelHandler:
 
     # Set the model and temperature (optional)
     # model = "phi3:mini"
-    model = "llama3"
+    model = "llama3.1"
     temperature = 1.0
     ollama_url = "http://localhost:3000"
     ollama_client = None
@@ -19,7 +19,8 @@ class LanguageModelHandler:
     default_reply = "I encountered an error while" + \
                     " processing your request. Please try again."
     speech_filters = [
-        r'```(.+)?\n[\s\S]+?```'
+        r'```(.+)?\n[\s\S]+?```',
+        r'\*'
     ]
     display_handler = None
     plugin_handler = None
@@ -67,7 +68,7 @@ class LanguageModelHandler:
                 )
 
     def get_response_to_prompt(self, voiceInputString, wake_word):
-        print("callback: ", voiceInputString)
+        print("Heard:", voiceInputString)
         # only process non-empty voice prompts
         if len(voiceInputString) == 0:
             return
@@ -101,17 +102,15 @@ class LanguageModelHandler:
                 prompt_without_wake_word
             )
 
-            print(
-                prompt_without_wake_word + " given that " + (
-                    prompt_augmentation if prompt_augmentation is not None else "" # noqa
-                )
+            full_prompt = prompt_without_wake_word + " " + (
+                prompt_augmentation if prompt_augmentation is not None else "" # noqa
             )
+
+            print("Asking:", full_prompt)
 
             # process the contents of the voice prompt through the LLM
             full_response, filtered_response = self.ask(
-                prompt_without_wake_word + " " + (
-                    prompt_augmentation if prompt_augmentation is not None else "" # noqa
-                )
+                full_prompt
             )
 
         # speak the response

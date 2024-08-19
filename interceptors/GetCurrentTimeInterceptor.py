@@ -1,6 +1,6 @@
 import requests
 from pyquery import PyQuery as pq
-from interceptors import PixelInterceptor
+from interceptors.PixelInterceptor import PixelInterceptor
 
 
 class GetCurrentTimeInterceptor(PixelInterceptor):
