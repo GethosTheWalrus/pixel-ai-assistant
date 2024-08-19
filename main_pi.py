@@ -1,3 +1,4 @@
+from InterceptorHandler import InterceptorHandler
 from PluginsHandler import PluginsHandler
 from VoiceHandler import VoiceHandler
 from LanguageModelHandler import LanguageModelHandler
@@ -17,12 +18,14 @@ if __name__ == "__main__":
     if config["lcd"] is True:
         displayHandler = DisplayHandler()
 
+    interceptorsHandler = InterceptorHandler()
     pluginsHandler = PluginsHandler()
     ttsHandler = TextToSpeechHandler()
     llmHandler = LanguageModelHandler(
         ttsHandler.speak,
         displayHandler,
-        pluginsHandler
+        pluginsHandler,
+        interceptorsHandler
     )
     voiceHandler = VoiceHandler(
         llmHandler.get_response_to_prompt

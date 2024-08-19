@@ -8,8 +8,8 @@ class LanguageModelHandler:
     tts_handler_object_method = None
 
     # Set the model and temperature (optional)
-    model = "phi3:mini"
-    # model = "llama3"
+    # model = "phi3:mini"
+    model = "llama3"
     temperature = 1.0
     ollama_url = "http://localhost:3000"
     ollama_client = None
@@ -23,12 +23,14 @@ class LanguageModelHandler:
     ]
     display_handler = None
     plugin_handler = None
+    interceptor_handler = None
 
     def __init__(
                     self,
                     tts_handler_object_method=None,
                     display_handler=None,
                     plugin_handler=None,
+                    interceptor_handler=None,
                     ollama_url="http://localhost:3000"
                 ) -> None:
         # self.connect_to_ollama(ollama_url)
@@ -36,6 +38,7 @@ class LanguageModelHandler:
         self.tts_handler_object_method = tts_handler_object_method
         self.display_handler = display_handler
         self.plugin_handler = plugin_handler
+        self.interceptor_handler = interceptor_handler
 
         self.set_display("Listening...")
 
@@ -84,7 +87,9 @@ class LanguageModelHandler:
         self.set_display("Thinking...")
         prompt_without_wake_word = " ".join(voiceInputString.split(" ")[1:])
 
-        full_response, filtered_response = None, None
+        full_response, filtered_response, prompt_augmentation = (
+            None, None, None
+        )
 
         if prompt_without_wake_word in self.plugin_handler.modules:
             # process the contents of the voice prompt
@@ -92,9 +97,21 @@ class LanguageModelHandler:
             plugin = self.plugin_handler.modules[prompt_without_wake_word]
             full_response = filtered_response = plugin.response
         else:
+            prompt_augmentation = self.interceptor_handler.evaluate_interceptors( # noqa
+                prompt_without_wake_word
+            )
+
+            print(
+                prompt_without_wake_word + " given that " + (
+                    prompt_augmentation if prompt_augmentation is not None else "" # noqa
+                )
+            )
+
             # process the contents of the voice prompt through the LLM
             full_response, filtered_response = self.ask(
-                prompt_without_wake_word
+                prompt_without_wake_word + " " + (
+                    prompt_augmentation if prompt_augmentation is not None else "" # noqa
+                )
             )
 
         # speak the response
@@ -108,7 +125,7 @@ class LanguageModelHandler:
         llmResponse = ollama.chat(model=self.model, messages=[
             {
                 'role': 'user',
-                'content': prompt + ". reply as briefly as possible.",
+                'content': prompt + ". reply as briefly as possible. Ideally in 4 sentences or less.", # noqa
             },
         ])
 

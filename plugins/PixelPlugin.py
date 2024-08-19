@@ -14,7 +14,7 @@ class PixelPlugin:
         try:
             return self.process()
         except Exception as e:
-            return self.handle_plugin_error() + " " + str(e)
+            return self.handle_plugin_error() + ": " + str(e)
 
     def handle_plugin_error(self) -> str:
         return "I encountered an error while processing your request." \

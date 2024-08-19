@@ -1,4 +1,4 @@
-from plugins.GetQuote import GetQuote
+from plugins.GetQuotePlugin import GetQuote
 
 
 def test_get_random_quote():

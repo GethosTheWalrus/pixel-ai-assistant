@@ -2,6 +2,7 @@ from VoiceHandler import VoiceHandler
 from LanguageModelHandler import LanguageModelHandler
 from TextToSpeechHandler import TextToSpeechHandler
 from PluginsHandler import PluginsHandler
+from InterceptorHandler import InterceptorHandler
 
 import json
 
@@ -12,12 +13,14 @@ if __name__ == "__main__":
         config = json.load(json_data)
         json_data.close()
 
+    interceptorsHandler = InterceptorHandler()
     pluginsHandler = PluginsHandler()
     ttsHandler = TextToSpeechHandler()
     llmHandler = LanguageModelHandler(
         ttsHandler.speak,
         None,
-        pluginsHandler
+        pluginsHandler,
+        interceptorsHandler
     )
     voiceHandler = VoiceHandler(
         llmHandler.get_response_to_prompt
