@@ -4,11 +4,11 @@ import re
 
 
 class LanguageModelHandler:
+    config = None
     # inject tts capabilities
     tts_handler_object_method = None
 
     # Set the model and temperature (optional)
-    # model = "phi3:mini"
     model = "llama3.1"
     temperature = 1.0
     ollama_url = "http://localhost:3000"
@@ -28,14 +28,17 @@ class LanguageModelHandler:
 
     def __init__(
                     self,
+                    config,
                     tts_handler_object_method=None,
                     display_handler=None,
                     plugin_handler=None,
                     interceptor_handler=None,
-                    ollama_url="http://localhost:3000"
                 ) -> None:
-        # self.connect_to_ollama(ollama_url)
-        self.init_ollama_connection(ollama_url)
+        self.config = config
+        self.init_ollama_connection(
+            config["ollama_url"] or
+            "http://localhost:3000"
+        )
         self.tts_handler_object_method = tts_handler_object_method
         self.display_handler = display_handler
         self.plugin_handler = plugin_handler

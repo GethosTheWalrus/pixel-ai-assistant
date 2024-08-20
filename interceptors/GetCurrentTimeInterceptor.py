@@ -4,7 +4,7 @@ from interceptors.PixelInterceptor import PixelInterceptor
 
 
 class GetCurrentTimeInterceptor(PixelInterceptor):
-    key_phrases = ["what", "time", "current", "now", "is", "it"]
+    keywords = ["what", "time", "current", "now", "is", "it"]
 
     def __init__(self, voice_prompt=None):
         super().__init__(voice_prompt)

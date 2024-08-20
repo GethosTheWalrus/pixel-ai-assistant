@@ -17,6 +17,7 @@ if __name__ == "__main__":
     pluginsHandler = PluginsHandler()
     ttsHandler = TextToSpeechHandler()
     llmHandler = LanguageModelHandler(
+        config,
         ttsHandler.speak,
         None,
         pluginsHandler,

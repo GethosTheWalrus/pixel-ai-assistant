@@ -1,3 +1,5 @@
 {
-	"lcd": true
+	"lcd": 			true,
+	"model": 		"llama3.1",
+	"ollama_url": 	"http://localhost:3000"
 }

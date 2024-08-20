@@ -31,5 +31,7 @@ class DisplayHandler:
         self.lcd.message = "Pixel\nAI Companion"
 
     def set_message(self, message):
+        # clear the LCD
         self.lcd.message = "                \n                "
+        # set the new message
         self.lcd.message = message
